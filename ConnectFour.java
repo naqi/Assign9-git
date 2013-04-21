@@ -1,21 +1,5 @@
 import java.util.Scanner;
 
-/*
- * CS312 Assignment 9
- * A program to play connect four.
- *
- * On my honor this program is my own work:
- * <Tehreem Syed>
- *
- *  email address:tehreemsyed@utexas.edu
- *  UTEID:tfs385
- *  Section 5 digit ID:
- *  Grader name:Vicky
- *  Number of slip days used on this assignment:None
- *
- * Number of slip days I am using:
- */
-
 public class ConnectFour {
 
 	public static final int currentRow = 5;
@@ -55,35 +39,48 @@ public class ConnectFour {
 	public static void runGame(Scanner key, char[][] board, String name1,
 			String name2) {
 		initializeBoard(board);
-		while (ifNoWin()) {
+		while (ifNoWin(board)) {
 
 			displayBoard(board);
 			char choice1 = 'r';// player 1 choice
 			char choice2 = 'b';// player 2 choice
-			int turn1 = 0;// player 1 column pick
-			int turn2 = 0; // player 2 column pick
 
-			turn1 = getColumn(name1, choice1, key, board);
-			turn2 = getColumn(name2, choice2, key, board);
+			// player 1 column pick
+			getColumn(name1, choice1, key, board);
 
-			placeChecker(turn1, board, choice1);
-
-			placeChecker(turn2, board, choice2);
-
+			// player 2 column pick
+			getColumn(name2, choice2, key, board);
 			displayBoard(board);
 		}
 
 	}
 
 	// boolean method that returns whetehr somebody won or not
-	public static boolean ifNoWin() {
+	public static boolean ifNoWin(char[][] board) {
+		boolean result;
+
+		if (checkBoard(board, 'r')) {
+			return false;
+		} else if (checkBoard(board, 'b')) {
+			return false;
+		}
 		return true;
 
 	}
 
+	private static boolean checkBoard(char[][] board, char charToCheck) {
+		boolean result = false;
+
+		if (board[0][0] == '.') {
+
+		}
+
+		return result;
+	}
+
 	// this method prompts the user to make a choice for column num and checks
 	// whther they made a valid input or not
-	public static int getColumn(String name, char choice, Scanner keyboard,
+	public static void getColumn(String name, char choice, Scanner keyboard,
 			char[][] board) {
 
 		String prompt = "";
@@ -92,8 +89,13 @@ public class ConnectFour {
 		System.out.println("Your pieces are the " + choice + "'s.");
 
 		prompt = name + ", enter the column to drop your checker: ";
+		int selection = getUserInput(name, keyboard, prompt, board);
 
-		return getUserInput(name, keyboard, prompt, board);
+		boolean result = placeChecker(board.length - 1, selection, board,
+				choice);
+		if (!result) {
+			getColumn(name, choice, keyboard, board);
+		}
 
 	}
 
@@ -116,9 +118,23 @@ public class ConnectFour {
 	}
 
 	// place the player's choice on the board
-	public static void placeChecker(int turn, char[][] board, char choice) {
+	public static boolean placeChecker(int row, int col, char[][] board,
+			char choice) {
+		boolean result = false;
+		if (inRange(row, col, board)) {
+			if (board[row][col] == '.') {
+				board[row][col] = choice;
+				result = true;
+			} else {
+				return placeChecker(row - 1, col, board, choice);
+			}
+		} else {
+			System.out.println(col
+					+ ", is not a legal column. That column is full.");
+			result = false;
+		}
 
-		board[currentRow][turn] = choice;
+		return result;
 
 	}
 
